@@ -24,7 +24,8 @@ jobs:
       - name: Package Release Archive
         shell: powershell
         run: |
-          Compress-Archive -Path HotspotManager.exe, README.md, Hotspot.ico -DestinationPath HotspotManager-v1.0.0.zip
+          $tag = if ($env:GITHUB_REF_NAME) { $env:GITHUB_REF_NAME } else { "latest" }
+          Compress-Archive -Path HotspotManager.exe, README.md, Hotspot.ico -DestinationPath "HotspotManager-$tag.zip"
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
@@ -32,7 +33,7 @@ jobs:
         with:
           files: |
             HotspotManager.exe
-            HotspotManager-v1.0.0.zip
+            HotspotManager-*.zip
           generate_release_notes: true
           draft: false
           prerelease: false
