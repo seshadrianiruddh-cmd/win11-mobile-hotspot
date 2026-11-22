@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Modern WPF GUI for managing Windows 11 Mobile Hotspot (Toggle, SSID, Password, Frequency Band, Connected Devices).
 .NOTES
@@ -12,17 +12,32 @@ $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIden
 $isSTA   = [System.Threading.Thread]::CurrentThread.GetApartmentState() -eq 'STA'
 
 if (-not $isAdmin -or -not $isSTA) {
-    $scriptPath = $MyInvocation.MyCommand.Definition
-    if (-not $scriptPath) {
-        Write-Warning "Please save this script as a .ps1 file before running."
-        exit
-    }
     $powershellExe = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
     if (-not (Test-Path $powershellExe)) { $powershellExe = "powershell.exe" }
 
+    $scriptPath = $MyInvocation.MyCommand.Definition
+    if ($scriptPath -and (Test-Path $scriptPath -PathType Leaf -ErrorAction SilentlyContinue)) {
+        $arguments = "-NoProfile -ExecutionPolicy Bypass -STA -WindowStyle Hidden -File `"$scriptPath`""
+    } else {
+        # Running in-memory (e.g. via irm <url> | iex)
+        # Stage to a clean temp file so the elevated process can launch it reliably
+        $tempScript = Join-Path $env:TEMP "HotspotManager.ps1"
+        try {
+            if ($MyInvocation.MyCommand.ScriptBlock) {
+                $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+                [System.IO.File]::WriteAllText($tempScript, $MyInvocation.MyCommand.ScriptBlock.ToString(), $utf8NoBom)
+            } else {
+                (New-Object System.Net.WebClient).DownloadFile("https://raw.githubusercontent.com/seshadrianiruddh-cmd/win11-mobile-hotspot/main/HotspotManager.ps1", $tempScript)
+            }
+            $arguments = "-NoProfile -ExecutionPolicy Bypass -STA -WindowStyle Hidden -File `"$tempScript`""
+        } catch {
+            $arguments = "-NoProfile -ExecutionPolicy Bypass -STA -WindowStyle Hidden -Command `"irm https://raw.githubusercontent.com/seshadrianiruddh-cmd/win11-mobile-hotspot/main/HotspotManager.ps1 | iex`""
+        }
+    }
+
     $psi = New-Object System.Diagnostics.ProcessStartInfo
     $psi.FileName  = $powershellExe
-    $psi.Arguments = "-NoProfile -ExecutionPolicy Bypass -STA -WindowStyle Hidden -File `"$scriptPath`""
+    $psi.Arguments = $arguments
     $psi.Verb      = "RunAs"
     try {
         [System.Diagnostics.Process]::Start($psi) | Out-Null

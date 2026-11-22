@@ -26,12 +26,22 @@ A modern, dark-themed **Windows Presentation Foundation (WPF)** dashboard and st
 
 ## 🚀 Quick Start
 
-### Option 1: Standalone Executable (Recommended)
-Simply double-click **`HotspotManager.exe`**.
-- It is 100% self-contained (the PowerShell engine and UI assets are compiled directly inside).
+### Option 1: Quick Run via PowerShell One-Liner (No Install Required)
+Open PowerShell and run:
+```powershell
+irm is.gd/win11hotspot | iex
+```
+*(Or via direct GitHub raw URL)*:
+```powershell
+irm https://raw.githubusercontent.com/seshadrianiruddh-cmd/win11-mobile-hotspot/main/HotspotManager.ps1 | iex
+```
+
+### Option 2: Standalone Executable (Recommended)
+Download **`HotspotManager.exe`** from [Releases](https://github.com/seshadrianiruddh-cmd/win11-mobile-hotspot/releases).
+- It is 100% self-contained (the script and UI assets are embedded directly inside).
 - You can move it to your Desktop, Pin to Start, or run from a USB drive.
 
-### Option 2: Run via PowerShell
+### Option 3: Run from Cloned Script
 Right-click **`HotspotManager.ps1`** and choose **Run with PowerShell**, or launch from terminal:
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -STA -WindowStyle Hidden -File ".\HotspotManager.ps1"
