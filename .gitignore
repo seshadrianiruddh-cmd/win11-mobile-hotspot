@@ -1,0 +1,6 @@
+# Binaries / Temp
+*.tmp
+*.log
+.vs/
+bin/
+obj/
