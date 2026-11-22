@@ -1,6 +1,7 @@
 # Binaries / Temp
 *.tmp
 *.log
+*.zip
 .vs/
 bin/
 obj/
